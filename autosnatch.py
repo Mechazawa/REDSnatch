@@ -15,6 +15,8 @@ _what_irc_token = ''
 _manager_url = '' # also accepts the transcode add url http://seedbox/transcode/request
 _manager_username = ''
 _manager_password = ''
+_max_release_year = 2016
+_bitrate = ['lossless', 'v0 (vbr)', 'v0', '320', '24bit lossless']
 
 headers = {
     'Connection': 'keep-alive',
@@ -29,8 +31,8 @@ headers = {
     'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
 
 
-#regex = compile('(?P<artist>.+)\s-\s(?P<release>.+)\s\[(?P<year>\d+)\]\s\[(?P<type>.+)\]\s-\s(?P<format>.+)\s/\s(?P<bitrate>.+)\s/\s(?P<media>.+)\s-\shttps://what\.cd/torrents\.php\?id=(?P<id>\d+)\s/\shttps://what\.cd/torrents\.php\?action=download&id=(?P<torrentid>\d+)\s-\s(?P<tags>.*)')
 regex = compile('(.+?) - (.+) \[(\d+)\] \[([^\]]+)\] - (MP3|FLAC|Ogg|AAC|AC3|DTS|Ogg Vorbis) / ((?:24bit)?(?: ?Lossless)?(?:[\d|~|\.xVq|\s]*(?:AAC|APX|APS|Mixed|Auto|VBR)?(?: LC)?)?(?: ?(?:\(VBR\)|\(?ABR\)?|[K|k][b|p]{1,2}s)?)?)(?: / (?:Log))?(?: / (?:[-0-9\.]+)\%)?(?: / (?:Cue))?(?: / (CD|DVD|Vinyl|Soundboard|SACD|Cassette|DAT|WEB|Blu-ray))(?: / (Scene))?(?: / (?:Freeleech!))? - https://what\.cd/torrents\.php\?id=(\d+) / https://what\.cd/torrents\.php\?action=download&id=(\d+) - ?(.*)')
+_bitrate.append('whatever')
 
 class MyOwnBot(pydle.Client):
     def on_connect(self):
@@ -75,11 +77,11 @@ class MyOwnBot(pydle.Client):
             year += 3
             bitrate = 'whatever'
 
-        if year < 2016:
+        if year < _max_release_year:
             print("Too old: {}".format(year))
             return False
 
-        if bitrate.lower() not in ['lossless', 'v0 (vbr)', 'v0', '320', '24bit lossless', 'whatever']:
+        if bitrate.lower() not in _bitrate:
             print("Wrong bitrate: {}".format(bitrate))
             return False
 
