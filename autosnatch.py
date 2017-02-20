@@ -35,7 +35,7 @@ headers = {
 regex = compile('(.+?) - (.+) \[(\d+)\] \[([^\]]+)\] - (MP3|FLAC|Ogg|AAC|AC3|DTS|Ogg Vorbis) / ((?:24bit)?(?: ?Lossless)?(?:[\d|~|\.xVq|\s]*(?:AAC|APX|APS|Mixed|Auto|VBR)?(?: LC)?)?(?: ?(?:\(VBR\)|\(?ABR\)?|[K|k][b|p]{1,2}s)?)?)(?: / (?:Log))?(?: / (?:[-0-9\.]+)\%)?(?: / (?:Cue))?(?: / (CD|DVD|Vinyl|Soundboard|SACD|Cassette|DAT|WEB|Blu-ray))(?: / (Scene))?(?: / (?:Freeleech!))? - https://redacted\.ch/torrents\.php\?id=(\d+) / https://redacted\.ch/torrents\.php\?action=download&id=(\d+) - ?(.*)')
 _bitrate.append('whatever')
 
-class MyOwnBot(pydle.Client):
+class AutoSnatchBot(pydle.Client):
     def on_connect(self):
         print("Authing with RED")
         self.session = requests.Session()
@@ -119,6 +119,6 @@ def fetch_torrent(torrent_id):
                              data={'id':torrent_id}).json()['success']
 
 if __name__ == '__main__':
-    client = MyOwnBot('{}-autosnatch'.format(_what_username), realname='bot')
+    client = AutoSnatchBot('{}-autosnatch'.format(_what_username), realname='bot')
     client.connect('irc.scratch-network.net', 6697, tls=True, tls_verify=False)
     client.handle_forever()
