@@ -12,7 +12,7 @@ import pydle
 _what_username = ''
 _what_password = ''
 _what_irc_token = ''
-_manager_url = '' # also accepts the transcode add url http://seedbox/transcode/request
+_manager_url = 'https://seedbox.example.com/json/add_torrent' # also accepts the transcode add url http://seedbox/transcode/request
 _manager_username = ''
 _manager_password = ''
 _max_release_year = 2016
