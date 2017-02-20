@@ -15,6 +15,7 @@ _what_irc_token = ''
 _manager_url = 'https://seedbox.example.com/json/add_torrent' # also accepts the transcode add url http://seedbox/transcode/request
 _manager_username = ''
 _manager_password = ''
+_pushjet_secret = '' # optional
 _max_release_year = 2016
 _bitrate = ['lossless', 'v0 (vbr)', 'v0', '320', '24bit lossless']
 
@@ -92,6 +93,13 @@ class MyOwnBot(pydle.Client):
         print("Fetching: {}".format(line))
         sleep(2)
         fetch_torrent(torrent_id)
+        if _pushjet_secret:
+            print('Sending notification')
+            pushjet_data = {
+                'message': "Autosnatched {}".format(line),
+                'secret': _pushjet_secret
+            }
+            requests.post("https://api.pushjet.io/message", data=pushjet_data)
     
     def request(self, target, **params):
         while time.time() - self.last_request < self.rate_limit:
