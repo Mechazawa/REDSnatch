@@ -31,16 +31,16 @@ headers = {
     'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
 
 
-regex = compile('(.+?) - (.+) \[(\d+)\] \[([^\]]+)\] - (MP3|FLAC|Ogg|AAC|AC3|DTS|Ogg Vorbis) / ((?:24bit)?(?: ?Lossless)?(?:[\d|~|\.xVq|\s]*(?:AAC|APX|APS|Mixed|Auto|VBR)?(?: LC)?)?(?: ?(?:\(VBR\)|\(?ABR\)?|[K|k][b|p]{1,2}s)?)?)(?: / (?:Log))?(?: / (?:[-0-9\.]+)\%)?(?: / (?:Cue))?(?: / (CD|DVD|Vinyl|Soundboard|SACD|Cassette|DAT|WEB|Blu-ray))(?: / (Scene))?(?: / (?:Freeleech!))? - https://what\.cd/torrents\.php\?id=(\d+) / https://what\.cd/torrents\.php\?action=download&id=(\d+) - ?(.*)')
+regex = compile('(.+?) - (.+) \[(\d+)\] \[([^\]]+)\] - (MP3|FLAC|Ogg|AAC|AC3|DTS|Ogg Vorbis) / ((?:24bit)?(?: ?Lossless)?(?:[\d|~|\.xVq|\s]*(?:AAC|APX|APS|Mixed|Auto|VBR)?(?: LC)?)?(?: ?(?:\(VBR\)|\(?ABR\)?|[K|k][b|p]{1,2}s)?)?)(?: / (?:Log))?(?: / (?:[-0-9\.]+)\%)?(?: / (?:Cue))?(?: / (CD|DVD|Vinyl|Soundboard|SACD|Cassette|DAT|WEB|Blu-ray))(?: / (Scene))?(?: / (?:Freeleech!))? - https://redacted\.ch/torrents\.php\?id=(\d+) / https://redacted\.ch/torrents\.php\?action=download&id=(\d+) - ?(.*)')
 _bitrate.append('whatever')
 
 class MyOwnBot(pydle.Client):
     def on_connect(self):
-        print("Authing with what.cd")
+        print("Authing with RED")
         self.session = requests.Session()
         self.session.headers.update(headers)
-        data = { 'username': _what_username, 'password': _what_password, 'keeplogged': 1, 'login': 'Login' }
-        r = self.session.post('https://what.cd/login.php', data=data)
+        data = { 'username': _what_username, 'password': _what_password, 'keeplogged': 1, 'login': 'Log+in' }
+        r = self.session.post('https://redacted.ch/login.php', data=data)
         if r.status_code != 200:
             raise Exception("Can't log in")
         self.last_request = time.time()
@@ -54,7 +54,7 @@ class MyOwnBot(pydle.Client):
         self.userid = accountinfo['id']
         print('Authed as user id {}'.format(self.userid))
         print("Poking drone")
-        self.message('Drone', 'ENTER #what.cd-announce {} {}'.format(_what_username, _what_irc_token))
+        self.message('Drone', 'ENTER #red-announce {} {}'.format(_what_username, _what_irc_token))
 
     def on_message(self, source, target, message):
          print("{}: {}".format(source, message))
@@ -86,7 +86,7 @@ class MyOwnBot(pydle.Client):
             return False
 
         if self.request('torrent', id=torrent_id)['torrent']['userId'] == self.userid:
-            print("Skipping because it's a torrent I made it...")
+            print("Skipping because it's a torrent I made...")
             return False
 
         print("Fetching: {}".format(line))
@@ -96,7 +96,7 @@ class MyOwnBot(pydle.Client):
     def request(self, target, **params):
         while time.time() - self.last_request < self.rate_limit:
             sleep(0.1)
-        url = 'https://what.cd/ajax.php'
+        url = 'https://redacted.ch/ajax.php'
         params['action'] = target
         if self.authkey:
             params['auth'] = target
@@ -112,5 +112,5 @@ def fetch_torrent(torrent_id):
 
 if __name__ == '__main__':
     client = MyOwnBot('{}-autosnatch'.format(_what_username), realname='bot')
-    client.connect('irc.what-network.net', 6697, tls=True, tls_verify=False)
+    client.connect('irc.scratch-network.net', 6697, tls=True, tls_verify=False)
     client.handle_forever()
